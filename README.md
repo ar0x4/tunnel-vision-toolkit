@@ -40,7 +40,7 @@ See [`bofs/README.md`](bofs/README.md) for build instructions.
 
 ### Protocol Definition (`proto/`)
 
-The reconstructed ZTNA v2 protobuf definition, extracted from embedded descriptors in `GlobalSecureAccessTunnelingService.exe` via Ghidra analysis.
+The reconstructed ZTNA v2 protobuf definition, extracted from embedded descriptors in `GlobalSecureAccessTunnelingService.exe`.
 
 ## Architecture
 
