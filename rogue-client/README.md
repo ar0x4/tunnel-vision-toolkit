@@ -75,5 +75,4 @@ Tokens expire in ~75 minutes.
 
 - Requires root for TUN device creation and route management
 - Only TCP and UDP traffic is tunneled (no ICMP)
-- Token refresh is not automated — re-run token acquisition when tokens expire
 - Connector must be online and able to reach the target resource
