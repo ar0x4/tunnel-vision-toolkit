@@ -1,0 +1,170 @@
+// Microsoft Global Secure Access ZTNA v2 Protocol
+// Extracted from GlobalSecureAccessTunnelingService.exe embedded protobuf descriptor
+// Binary path: Protos/ztna_v2.proto
+// C# namespace: Microsoft.Naas.Ztna.Grpc.V2
+
+syntax = "proto3";
+
+package microsoft.ztna.v2;
+
+enum ConnectionProtocol {
+    UNDEFINED = 0;
+    IP = 3;
+    TCP = 6;
+    UDP = 17;
+}
+
+enum TrafficProfile {
+    PROFILE_UNDEFINED = 0;
+    INTERNET = 1;
+    PRIVATE_ACCESS = 2;
+    M365 = 3;
+}
+
+enum CrossTenantAccessType {
+    CROSS_TENANT_ACCESS_NONE = 0;
+    B2B_COLLABORATION = 1;
+}
+
+enum DeviceJoinType {
+    DEVICE_JOIN_NONE = 0;
+    MICROSOFT_ENTRA_JOINED = 1;
+    MICROSOFT_ENTRA_REGISTERED = 2;
+}
+
+enum CloseReason {
+    CLOSE_REASON_UNKNOWN = 0;
+    CLOSE_REASON_TOKEN_EXPIRED = 1;
+}
+
+message ClientPolicyMetadata {
+    string fw_policy_version = 1;
+}
+
+message ClientDeviceInfo {
+    string client_agent_version = 1;
+    string client_os_type = 2;
+    string client_os_version = 3;
+    string client_device_id = 4;
+    string client_os_name = 5;
+    ClientPolicyMetadata client_policy_metadata = 6;
+    string client_device_name = 7;
+    string client_os_architecture = 8;
+    DeviceJoinType client_device_join_type = 9;
+}
+
+message ClientFlowMetadata {
+    string correlation_id = 1;
+    string tunnel_id = 2;
+    string destination_ip = 3;
+    string destination_host = 4;
+    int32 destination_port = 5;
+    string client_resolved_ips = 6;
+    string client_invoked_process_name = 7;
+    string app_token = 8;
+    ConnectionProtocol protocol = 9;
+}
+
+message CreateTunnelMessage {
+    string tunnel_token = 1;
+    ClientDeviceInfo agent_metadata = 2;
+}
+
+message CreateTunnelNoTokenMessage {
+    ClientDeviceInfo agent_metadata = 1;
+}
+
+message TunnelAuthenticationRequest {
+    string tunnel_token = 1;
+}
+
+message FlowAuthenticationRequest {
+    ClientFlowMetadata metadata = 1;
+}
+
+message TunnelCreatedMessage {
+    string tunnel_id = 1;
+    string claim_challenge = 2;
+    string azure_region_display_name = 3;
+    string server_geo_location = 4;
+}
+
+message TunnelAuthenticationRequired {
+    string claim_challenge = 1;
+}
+
+message TunnelAuthenticationSuccessResponse {
+}
+
+message TunnelAuthenticationFailedResponse {
+}
+
+message TunnelClosedMessage {
+    string tunnel_id = 1;
+    CloseReason close_reason = 2;
+    string error_message = 3;
+}
+
+message FlowClosedReason {
+    string close_status_code = 1;
+    string ui_description = 2;
+    string detailed_description = 3;
+    string notification_aggregation_key = 4;
+    string ui_title = 5;
+}
+
+message FlowClosedMessage {
+    FlowClosedReason reason = 1;
+    string correlation_id = 2;
+    string client_invoked_process_name = 3;
+}
+
+message FlowAuthenticationSuccessResponse {
+    string correlation_id = 1;
+}
+
+message FlowAuthenticationFailureResponse {
+    string correlation_id = 1;
+}
+
+// Client control message — field numbers 2-9 are reserved
+message ClientControlMessage {
+    string correlation_vector = 1;
+    reserved 2 to 9;
+    oneof payload {
+        CreateTunnelMessage create_tunnel = 10;
+        TunnelAuthenticationRequest authentication_request = 11;
+        CreateTunnelNoTokenMessage create_tunnel_no_token = 12;
+        FlowAuthenticationRequest flow_authentication_request = 13;
+    }
+}
+
+// Server control message — field numbers 2-9 are reserved
+message ServerControlMessage {
+    string correlation_vector = 1;
+    reserved 2 to 9;
+    oneof payload {
+        TunnelCreatedMessage tunnel_created = 10;
+        TunnelAuthenticationRequired tunnel_authentication_required = 11;
+        TunnelAuthenticationSuccessResponse tunnel_authentication_success_response = 12;
+        TunnelAuthenticationFailedResponse tunnel_authentication_failed_response = 13;
+        TunnelClosedMessage tunnel_closed = 14;
+        FlowClosedMessage flow_closed = 15;
+        FlowAuthenticationSuccessResponse flow_authentication_success = 16;
+        FlowAuthenticationFailureResponse flow_authentication_failure = 17;
+    }
+}
+
+message ClientFlowMessage {
+    ClientFlowMetadata metadata = 1;
+    bytes packet = 2;
+}
+
+message ServerFlowMessage {
+    bytes packet = 1;
+}
+
+service Ztna {
+    rpc CreateControlChannel(stream ClientControlMessage) returns (stream ServerControlMessage);
+    rpc CreateFlow(stream ClientFlowMessage) returns (stream ServerFlowMessage);
+}
