@@ -1,6 +1,6 @@
 # Tunnel Vision Toolkit
 
-<div style="text-align:center"><img src="logo.png" alt="Logo" /></div>
+<div style="text-align:center"><img src="logo.png" alt="Logo" width="200" /></div>
 
 Offensive security toolkit for Microsoft Global Secure Access (GSA), Microsoft's Zero Trust Network Access (ZTNA) solution. Developed as part of the research presented at **x33fcon 2026** — *"Tunnel Vision: What Microsoft's Secure Edge Can't See"*.
 
